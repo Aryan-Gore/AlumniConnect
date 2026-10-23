@@ -1,0 +1,67 @@
+# Brings up all four pieces of AlumniConnect together: MySQL, the Spring
+# Boot backend, the Python analytics service, and the React frontend.
+#
+# Expects this layout (i.e. unzip all three project deliverables as
+# siblings before running `docker compose up --build` from here):
+#
+#   alumniconnect-backend/      <- this file lives here
+#   alumniconnect-analytics/
+#   alumniconnect-frontend/
+#
+# This is genuinely the first place these three pieces would ever run
+# together — see the backend README's compile caveat. Expect the first
+# `docker compose up --build` to surface something; that's the point of
+# actually running it.
+
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: alumniconnect_dev
+      MYSQL_DATABASE: alumniconnect
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./database/demo_data.sql:/docker-entrypoint-initdb.d/02_demo_data.sql:ro
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-palumniconnect_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  analytics:
+    build: ../alumniconnect-analytics
+    ports:
+      - "8000:8000"
+
+  backend:
+    build: .
+    depends_on:
+      mysql:
+        condition: service_healthy
+      analytics:
+        condition: service_started
+    environment:
+      DB_HOST: mysql
+      DB_USERNAME: root
+      DB_PASSWORD: alumniconnect_dev
+      JWT_SECRET: local-dev-only-secret-change-before-any-real-deployment-1234567890
+      FRONTEND_ORIGIN: http://localhost:5173
+      ANALYTICS_SERVICE_URL: http://analytics:8000
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ../alumniconnect-frontend
+      args:
+        VITE_API_BASE_URL: http://localhost:8080/api
+    depends_on:
+      - backend
+    ports:
+      - "5173:80"
+
+volumes:
+  mysql-data:

@@ -1,0 +1,73 @@
+spring:
+  application:
+    name: alumniconnect-backend
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/alumniconnect?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      # Schema is owned by database/schema.sql (run it yourself, or via a
+      # migration tool). `validate` means Spring boots only if the schema
+      # already matches these entities — it will never silently alter your
+      # database, which matters for an alumni records system.
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        # Loads lazy associations for up to 50 entities in one IN (...) query
+        # instead of one query each — turns directory/feed/chat list mapping
+        # from N+1 into a handful of queries without any fetch-join plumbing.
+        default_batch_fetch_size: 50
+        jdbc:
+          time_zone: UTC
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+app:
+  google:
+    # OAuth 2.0 Web client ID from Google Cloud Console (APIs & Services ->
+    # Credentials). Leave empty to hide the "Continue with Google" button.
+    client-id: ${GOOGLE_CLIENT_ID:}
+  storage:
+    # Uploaded profile photos and post images. Mount a volume here in Docker.
+    dir: ${UPLOAD_DIR:./uploads}
+  bootstrap-admin:
+    # If both are set and no ADMIN account exists yet, one is created at
+    # start-up. Change the password after the first login.
+    email: ${ADMIN_EMAIL:}
+    password: ${ADMIN_PASSWORD:}
+    full-name: ${ADMIN_NAME:Alumni Office}
+  jwt:
+    # Generate your own with: openssl rand -base64 64
+    secret: ${JWT_SECRET:change-this-to-a-real-256-bit-secret-before-deploying-anywhere}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
+  cors:
+    # Comma-separated list of allowed browser origins (also used for the WebSocket handshake)
+    allowed-origin: ${FRONTEND_ORIGIN:http://localhost:5173}
+  analytics:
+    # The Python/FastAPI service — Spring Boot calls this internally for CSV
+    # cleaning and stats; the frontend never talks to it directly.
+    base-url: ${ANALYTICS_SERVICE_URL:http://localhost:8000}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+logging:
+  level:
+    com.alumniconnect.backend: ${LOG_LEVEL:INFO}

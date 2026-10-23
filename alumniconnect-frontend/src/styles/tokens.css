@@ -1,0 +1,49 @@
+/*
+  AlumniConnect design tokens.
+
+  Direction: clean, light, professional-network aesthetic (the reference
+  point was explicitly LinkedIn) — white cards on a soft warm-gray canvas,
+  a single confident blue accent, no serif/editorial flourish. Replaces the
+  earlier dark academic-ledger theme; every component reads these tokens,
+  so this file is the whole re-theme.
+*/
+
+@theme {
+  /* Surfaces */
+  --color-bg: #f4f2ed;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f3f2ef;
+  --color-surface-sunken: #f8f9fa;
+  --color-border: #dbdfe3;
+  --color-border-soft: #ebedf0;
+
+  /* Text */
+  --color-text-primary: #1b1f23;
+  --color-text-secondary: #5e6b78;
+  --color-text-tertiary: #8a97a3;
+
+  /* Brand accent — LinkedIn-style blue */
+  --color-accent: #0a66c2;
+  --color-accent-hover: #004182;
+  --color-accent-soft: #0a66c214;
+
+  /* Status — ties directly to the record-status vocabulary in the spec
+     (IMPORTED / INVITED / CLAIMED / ACTIVE / INACTIVE, PENDING / etc.) */
+  --color-success: #057642;
+  --color-success-soft: #0576421a;
+  --color-warning: #9a6700;
+  --color-warning-soft: #9a67001a;
+  --color-danger: #b0281f;
+  --color-danger-soft: #b0281f1a;
+  --color-info: #4b7ba6;
+  --color-info-soft: #4b7ba61a;
+
+  /* Type — one clean sans-serif family throughout, no serif/display face */
+  --font-display: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', monospace;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
